@@ -1,0 +1,7 @@
+{
+    "model": "gemini-3.5-flash-lite",
+    "env": {
+        "ANTHROPIC_BASE_URL": "http://localhost:4000",
+        "ANTHROPIC_AUTH_TOKEN": "sk-password"
+    }
+}

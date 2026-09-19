@@ -1,0 +1,13 @@
+model_list:
+  - model_name: gemini-3.5-flash-lite
+    litellm_params:
+      model: gemini/gemini-3.5-flash-lite
+      api_key: os.environ/GEMINI_API_KEY
+
+general_settings:
+  master_key: "sk-password"
+  # WARNING: store_prompts_in_spend_logs はプロンプト・応答の本文を平文のまま
+  # Postgres の LiteLLM_SpendLogs テーブルに保存する。DB に誰かがアクセスできれば
+  # 会話内容がそのまま読めてしまうため、機密情報を扱う場合は有効化しないこと。
+  # 消去する場合は scripts/purge_message_logs.sh を実行する。
+  store_prompts_in_spend_logs: true
