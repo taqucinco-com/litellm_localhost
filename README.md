@@ -169,3 +169,25 @@ localhost:4000/ui で確認できる。
 
 ID:admin  
 PASS:sk-password
+
+# Ollama
+
+Ollama この環境とは別に起動しておき、先にモデルを作成しておくこと。
+
+```sh
+# e.g. qwen2.5-coder-7b-instruct-q2_k.gguf
+$ ollama serve
+$ curl http://127.0.0.1:11434
+$ cd ~/Documents/llm/model
+$ export $(cat .env | xargs)
+$ wget —header=“Authorization: Bearer $HUGGINGFACEHUB_API_TOKEN” -O qwen2.5-coder-7b-instruct-q2_k.gguf \
+  'https://huggingface.co/Qwen/Qwen2.5-Coder-7B-Instruct-GGUF/resolve/main/qwen2.5-coder-7b-instruct-q2_k.gguf'
+$ cat > Modelfile-qwen2.5-7b-q2_k << 'EOF'
+FROM ./qwen2.5-coder-7b-instruct-q2_k.gguf
+PARAMETER num_ctx 8192
+EOF
+
+ollama create qwen2.5-coder-7b-instruct-q2_k -f Modelfile-qwen2.5-7b-q2_k
+$ ollama list
+$ ollama run qwen2.5-coder-7b-instruct-q2_k # なにか質問した後 /bye
+```
