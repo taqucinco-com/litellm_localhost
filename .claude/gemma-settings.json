@@ -2,6 +2,9 @@
     "model": "gemma4-26b-a4b-q4k",
     "env": {
         "ANTHROPIC_BASE_URL": "http://localhost:4000",
-        "ANTHROPIC_AUTH_TOKEN": "sk-password"
+        "ANTHROPIC_AUTH_TOKEN": "sk-password",
+        "API_TIMEOUT_MS": "900000",
+        "API_FORCE_IDLE_TIMEOUT": "0",
+        "CLAUDE_STREAM_IDLE_TIMEOUT_MS": "900000"
     }
 }

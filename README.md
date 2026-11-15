@@ -51,10 +51,22 @@ Gemini API を使う場合:
     "model": "gemma4-26b-a4b-q4k",
     "env": {
         "ANTHROPIC_BASE_URL": "http://localhost:4000",
-        "ANTHROPIC_AUTH_TOKEN": "sk-password"
+        "ANTHROPIC_AUTH_TOKEN": "sk-password",
+        "API_TIMEOUT_MS": "900000",
+        "API_FORCE_IDLE_TIMEOUT": "0",
+        "CLAUDE_STREAM_IDLE_TIMEOUT_MS": "900000"
     }
 }
 ```
+
+ローカル LLM は長い入力の読み込みに数分かかるため、gemma 用はタイムアウトを
+15 分に延ばしている（理由は `docs/adr/202611151449.md`）。
+
+| 変数 | 値 | 意味 |
+|---|---|---|
+| `API_TIMEOUT_MS` | `900000` | レスポンスヘッダーが届くまで最大 15 分待つ |
+| `API_FORCE_IDLE_TIMEOUT` | `0` | ヘッダー待ちを含め 5 分で打ち切るタイマーをオフにする |
+| `CLAUDE_STREAM_IDLE_TIMEOUT_MS` | `900000` | ストリーム中の無通信を最大 15 分待つ |
 
 ## claude cli
 
@@ -65,6 +77,23 @@ claude --settings .claude/gemini-settings.json
 # ローカルの gemma（Ollama）
 claude --settings .claude/gemma-settings.json
 ```
+
+### gemma では auto mode を使わない
+
+gemma で claude cli を使うときは、auto mode をオフにする（Shift+Tab で
+default などのモードに切り替え、コマンドは自分で承認する）。
+
+auto mode では Bash などを実行する前に、コマンドが安全かをモデルに判定させる。
+`ANTHROPIC_BASE_URL` を LiteLLM に向けていると、この判定も gemma に送られる。
+ローカルの gemma では 1 回の判定に 1 分以上かかり、claude cli 側が約 60 秒で
+打ち切る。そのため、コマンドは実行されないまま次のエラーになる。
+
+```
+gemma4-26b-a4b-q4k is temporarily unavailable (timed out), so auto mode cannot determine the safety of Bash right now.
+```
+
+この打ち切り時間を延ばす設定は claude cli には無い（上の表の
+タイムアウトは通常の API リクエスト用で、この判定には効かない）。
 
 
 # 確認方法
