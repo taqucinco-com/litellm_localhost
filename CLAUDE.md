@@ -16,6 +16,10 @@ README.md には書かず、`docs/adr/yyyyMMddhhmm.md`（`date +%Y%m%d%H%M`）�
 LiteLLM Proxy をローカルの Docker Compose で起動し、Gemini API 経由で
 `gemini-3.5-flash-lite` という名前のモデルを、Anthropic 互換の
 `http://localhost:4000/v1/messages` エンドポイントから叩けるようにする構成。
+あわせて、ホストで稼働している Ollama のローカルモデルを `gemma4-26b-a4b-q4k`
+という名前で登録しており（`ollama_chat/` 経由、`http://host.docker.internal:11434`）、
+リクエストの `model` で Gemini とローカル LLM を切り替えられる
+（経緯は `docs/adr/202611151348.md`）。
 
 - `docker-compose.yml`: LiteLLM Proxy 本体（`litellm` サービス）と、モデル・
   仮想キー・利用ログを保存する Postgres（`db` サービス）を起動する。
@@ -65,6 +69,21 @@ docker compose restart litellm
   存在しない。** 複数設定を切り替えたい場合は設定ファイルを分けて
   `claude --settings <path>` で明示的に読み込む（詳細は README.md
   「claude側の設定」を参照）。
+- **`gemma4-26b-a4b-q4k` を使うには Ollama をホスト側で起動しておく必要がある。** LiteLLM コンテナからは
+  `host.docker.internal:11434` でホストの Ollama に接続する。
+  `ollama list` に `gemma4-26b-a4b-q4k` が出ていること、
+  `curl http://localhost:11434/api/tags` が応答することを確認する。
+- **gemma4 の thinking は `think: false` で無効化している。** 有効だと
+  思考だけで `max_tokens` を使い切り、`text` が空で返る。
+- **Ollama のコンテキスト長は `config.yaml` の `num_ctx: 65536` で広げている。**
+  Ollama のモデルは Modelfile の `PARAMETER num_ctx 8192` で作成されており、
+  これを超えた入力は黙って切り捨てられる（実際に届くのは半分程度の 4099
+  トークン前後）。claude cli のツール定義が届かず、存在しないツール
+  （`shell` 等）を呼んだり、宣言だけして何もしなくなる。リクエスト側の
+  `num_ctx` が Modelfile の値より優先されるため、Modelfile を作り直す必要は
+  ない。現在の値は `ollama ps` の `CONTEXT` 列、Modelfile の値は
+  `ollama show <model> --parameters` で確認できる。切り捨ての有無は
+  `LiteLLM_SpendLogs` の `prompt_tokens` が頭打ちになっていないかで判別できる。
 
 ## 動作確認
 

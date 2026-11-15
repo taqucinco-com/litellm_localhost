@@ -21,6 +21,10 @@ services:
       DATABASE_URL: postgresql://litellm:litellm@db:5432/litellm
       STORE_MODEL_IN_DB: "True"
       GEMINI_API_KEY: ${GEMINI_API_KEY}
+    # ホストで動いている Ollama (localhost:11434) にコンテナから到達するため。
+    # Docker Desktop では不要だが Linux の Docker Engine でも動くように明示する。
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
     depends_on:
       db:
         condition: service_healthy

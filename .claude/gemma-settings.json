@@ -1,0 +1,7 @@
+{
+    "model": "gemma4-26b-a4b-q4k",
+    "env": {
+        "ANTHROPIC_BASE_URL": "http://localhost:4000",
+        "ANTHROPIC_AUTH_TOKEN": "sk-password"
+    }
+}

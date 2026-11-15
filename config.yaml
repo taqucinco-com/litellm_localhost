@@ -4,6 +4,20 @@ model_list:
       model: gemini/gemini-3.5-flash-lite
       api_key: os.environ/GEMINI_API_KEY
 
+  - model_name: gemma4-26b-a4b-q4k
+    litellm_params:
+      # ホストで動いている Ollama のローカルモデルへ転送する。
+      model: ollama_chat/gemma4-26b-a4b-q4k
+      api_base: http://host.docker.internal:11434
+      # gemma4 は thinking 対応モデルで、有効だと max_tokens を思考だけで
+      # 使い切り text が空になりやすいため無効化する。
+      think: false
+      # Ollama のモデルは Modelfile の `PARAMETER num_ctx 8192` で作成しており、
+      # 超えた入力は黙って切り捨てられる。claude cli はシステムプロンプトと
+      # ツール定義だけで数万トークンになるため、リクエスト側の num_ctx で
+      # 上書きして広げる（リクエストの値が Modelfile より優先される）。
+      num_ctx: 65536
+
 general_settings:
   master_key: "sk-password"
   # WARNING: store_prompts_in_spend_logs はプロンプト・応答の本文を平文のまま
