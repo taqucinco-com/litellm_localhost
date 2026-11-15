@@ -95,5 +95,5 @@ curl -s http://localhost:4000/v1/messages \
 
 localhost:4000/ui で確認できる。
 
-ID:admin
+ID:admin  
 PASS:sk-password
