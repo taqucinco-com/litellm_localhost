@@ -78,6 +78,7 @@ curl -s http://localhost:4000/v1/messages \
 
 `config.yaml` や `.env` を書き換えた後は、必ず `docker compose restart litellm`
 （または `docker compose up -d`）でコンテナに反映してから確認すること。
+**環境によっては`docker-compose`で起動**
 
 # ログの削除
 
@@ -93,3 +94,6 @@ curl -s http://localhost:4000/v1/messages \
 # LiteLLMのUI
 
 localhost:4000/ui で確認できる。
+
+ID:admin
+PASS:sk-password
